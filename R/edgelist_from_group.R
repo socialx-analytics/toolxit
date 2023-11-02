@@ -11,15 +11,14 @@
 #' @return A dataframe with two columns representing the source and target of each edge.
 #' @examples
 #' df <- data.frame(
-#'   Group = c('A', 'A', 'B', 'B', 'B', 'C'),
-#'   Item = c('Item1', 'Item2', 'Item1', 'Item2', 'Item3', 'Item1')
+#'   Group = c("A", "A", "B", "B", "B", "C"),
+#'   Item = c("Item1", "Item2", "Item1", "Item2", "Item3", "Item1")
 #' )
-#' edge_list <- edgelist_from_group(df, 'Group', 'Item', remove_duplicates = TRUE)
+#' edge_list <- edgelist_from_group(df, "Group", "Item", remove_duplicates = TRUE)
 #' print(edge_list)
 #'
 #' @export
-edgelist_from_group  <- function(df, group_col, item_col, remove_duplicates = FALSE) {
-
+edgelist_from_group <- function(df, group_col, item_col, remove_duplicates = FALSE) {
   # Dummy assignment to avoid R CMD check notes
   Var1 <- Var2 <- NULL
 
@@ -28,14 +27,16 @@ edgelist_from_group  <- function(df, group_col, item_col, remove_duplicates = FA
 
   # Initialize list to store edge list
   edges <- lapply(groups, function(group) {
-    if(length(group) < 2) return(NULL) # If there is only one item, there is no edge
+    if (length(group) < 2) {
+      return(NULL)
+    } # If there is only one item, there is no edge
     # Create all combinations of item pairs within the group
     combinations <- expand.grid(group, group)
     # Remove pairs with the same items
     combinations <- subset(combinations, Var1 != Var2)
-    if(remove_duplicates) {
+    if (remove_duplicates) {
       # Remove duplicates by comparing after sorting
-      combinations <- combinations[!duplicated(t(apply(combinations, 1, sort))),]
+      combinations <- combinations[!duplicated(t(apply(combinations, 1, sort))), ]
     }
     return(combinations)
   })
