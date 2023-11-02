@@ -1,0 +1,12 @@
+Package: toolxit
+Title: Just a toolkit to help make work easier
+Version: 1.1
+Authors@R: 
+    person("First", "Last", , "apriandito@socialx.id", role = c("aut", "cre"))
+Description: There are so many repetitive tasks when working, why not just create a package?
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    stats
