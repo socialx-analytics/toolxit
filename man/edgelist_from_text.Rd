@@ -2,7 +2,7 @@
 % Please edit documentation in R/edgelist_from_text.R
 \name{edgelist_from_text}
 \alias{edgelist_from_text}
-\title{Create an edge list from a text using a sliding window}
+\title{Generate Edge List from Text with Context Window}
 \usage{
 edgelist_from_text(
   text = NULL,
@@ -12,25 +12,26 @@ edgelist_from_text(
 )
 }
 \arguments{
-\item{text}{A character string from which to create the edge list.}
+\item{text}{A string containing the text to be processed.}
 
-\item{window_size}{An integer defining the size of the sliding window.}
+\item{window_size}{A positive integer indicating the size of the context window around each word for edge formation (default is 1).}
 
-\item{remove_duplicates}{Logical; if TRUE, removes duplicate edges.}
+\item{remove_duplicates}{Logical; if TRUE, duplicate edges are removed, considering that an edge between two words is undirected.}
 
-\item{stopwords}{A character vector of words to be removed from the text.}
+\item{stopwords}{A character vector of stopwords to be removed from the text (default is an empty character vector).}
 }
 \value{
-A data frame with two columns representing the source and target of each edge.
+A dataframe with two columns 'source' and 'target', each row representing an edge between two words in the text within the context window.
 }
 \description{
-This function takes a string of text and creates an edge list based on a sliding window.
-It can optionally remove duplicate edges and exclude specified stopwords.
+Processes a string of text and generates an edge list where each edge represents a pair of words that appear within a certain distance defined by the window size. The function allows for the removal of stopwords and duplicates to reduce noise in the edge list.
 }
 \examples{
-text <- "I like you in hate"
-stopwords <- c("in")
-edge_list <- edgelist_from_text(text, 3, remove_duplicates = TRUE, stopwords = stopwords)
+\dontrun{
+sample_text <- "I like programming in R"
+sample_stopwords <- c("in")
+# Generate edge list with a window size of 4 and remove duplicates
+edge_list <- edgelist_from_text(sample_text, 4, TRUE, sample_stopwords)
 print(edge_list)
-
+}
 }

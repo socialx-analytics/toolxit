@@ -1,62 +1,63 @@
-#' Create an edge list from a text using a sliding window
+#' Generate Edge List from Text with Context Window
 #'
-#' This function takes a string of text and creates an edge list based on a sliding window.
-#' It can optionally remove duplicate edges and exclude specified stopwords.
+#' Processes a string of text and generates an edge list where each edge represents a pair of words that appear within a certain distance defined by the window size. The function allows for the removal of stopwords and duplicates to reduce noise in the edge list.
 #'
-#' @param text A character string from which to create the edge list.
-#' @param window_size An integer defining the size of the sliding window.
-#' @param remove_duplicates Logical; if TRUE, removes duplicate edges.
-#' @param stopwords A character vector of words to be removed from the text.
-#'
-#' @return A data frame with two columns representing the source and target of each edge.
-#' @examples
-#' text <- "I like you in hate"
-#' stopwords <- c("in")
-#' edge_list <- edgelist_from_text(text, 3, remove_duplicates = TRUE, stopwords = stopwords)
-#' print(edge_list)
-#'
+#' @param text A string containing the text to be processed.
+#' @param window_size A positive integer indicating the size of the context window around each word for edge formation (default is 1).
+#' @param remove_duplicates Logical; if TRUE, duplicate edges are removed, considering that an edge between two words is undirected.
+#' @param stopwords A character vector of stopwords to be removed from the text (default is an empty character vector).
+#' @return A dataframe with two columns 'source' and 'target', each row representing an edge between two words in the text within the context window.
 #' @export
+#' @examples
+#' \dontrun{
+#' sample_text <- "I like programming in R"
+#' sample_stopwords <- c("in")
+#' # Generate edge list with a window size of 4 and remove duplicates
+#' edge_list <- edgelist_from_text(sample_text, 4, TRUE, sample_stopwords)
+#' print(edge_list)
+#' }
 edgelist_from_text <- function(text = NULL, window_size = 1, remove_duplicates = FALSE, stopwords = character(0)) {
-  # Convert text to lowercase to ignore case
-  text <- tolower(text)
-  # Convert stopwords to lowercase to ignore case
-  stopwords <- tolower(stopwords)
+  # Validate input parameters
+  if (!is.character(text) || is.null(text) || text == "") {
+    stop("Text must be a non-empty string.")
+  }
 
-  # Split text into words and remove stopwords
-  words <- unlist(strsplit(text, " "))
-  words <- words[!words %in% stopwords]
-  len <- length(words)
+  if (!is.numeric(window_size) || window_size < 1) {
+    stop("Window size must be a positive integer.")
+  }
 
-  # Initialize a list to store edges
-  edge_list <- vector("list", length = len * (window_size * 2))
+  # Preprocess text and stopwords
+  text <- tolower(text) # Convert text to lowercase
+  stopwords <- tolower(stopwords) # Convert stopwords to lowercase
 
-  # Variable to keep track of the index in the list
-  edge_index <- 1
+  # Split text into words, remove stopwords, and define word length
+  words <- unlist(strsplit(text, "\\W+")) # Split text into words using non-word characters as separators
+  words <- words[!words %in% stopwords] # Remove stopwords
+  len <- length(words) # Get the number of words after stopwords removal
 
-  # Loop through each word
+  # Initialize an empty data frame to store edges
+  edge_list <- data.frame(source = character(), target = character(), stringsAsFactors = FALSE)
+
+  # Generate edges based on the context window
   for (i in 1:len) {
-    # Define the boundaries for the context window
-    window_indices <- (max(1, i - window_size)):(min(len, i + window_size))
-
-    # Remove the index that is the same as the current word
+    window_start <- max(1, i - window_size)
+    window_end <- min(len, i + window_size)
+    window_indices <- window_start:window_end
     window_indices <- window_indices[window_indices != i]
 
-    # Add pairs to the list
+    # Create edges within the context window
     for (j in window_indices) {
-      edge_list[[edge_index]] <- list(source = words[i], target = words[j])
-      edge_index <- edge_index + 1
+      edge_list <- rbind(edge_list, data.frame(source = words[i], target = words[j]))
     }
   }
 
-  # Remove NULL elements and convert to a data frame
-  edge_list <- do.call(rbind.data.frame, edge_list)
-
+  # Remove duplicates if requested
   if (remove_duplicates) {
     edge_list <- edge_list[!duplicated(t(apply(edge_list, 1, sort))), ]
   }
 
-  # Set the correct column names
-  names(edge_list) <- c("source", "target")
+  # Reset row names to ensure clean output
+  row.names(edge_list) <- NULL
 
   return(edge_list)
 }

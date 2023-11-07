@@ -2,32 +2,34 @@
 % Please edit documentation in R/edgelist_from_group.R
 \name{edgelist_from_group}
 \alias{edgelist_from_group}
-\title{Create an edge list from a dataframe based on groups}
+\title{Generate Edge List from Grouped Data}
 \usage{
 edgelist_from_group(df, group_col, item_col, remove_duplicates = FALSE)
 }
 \arguments{
-\item{df}{A dataframe with at least two columns.}
+\item{df}{A dataframe containing at least two columns: one for the group identifier and one for the items.}
 
-\item{group_col}{The name of the column that contains the grouping variable.}
+\item{group_col}{The name of the column in the dataframe that identifies the group.}
 
-\item{item_col}{The name of the column that contains the items to be connected within groups.}
+\item{item_col}{The name of the column that contains the items.}
 
-\item{remove_duplicates}{Logical; if TRUE, removes duplicate edges.}
+\item{remove_duplicates}{Logical; if TRUE, duplicate edges are removed, considering that an edge between two items is undirected.}
 }
 \value{
-A dataframe with two columns representing the source and target of each edge.
+A dataframe representing the edge list, with 'source' and 'target' columns.
 }
 \description{
-This function takes a dataframe and constructs an edge list where each item within the same group is connected.
-It can optionally remove duplicate edges.
+This function creates an edge list from a dataframe where each row represents an edge. The edges are formed between items within the same group.
 }
 \examples{
+\dontrun{
+# Example dataframe with 'group' and 'item' columns
 df <- data.frame(
-  Group = c('A', 'A', 'B', 'B', 'B', 'C'),
-  Item = c('Item1', 'Item2', 'Item1', 'Item2', 'Item3', 'Item1')
+  group = c("A", "A", "B", "B", "B"),
+  item = c(1, 2, 1, 3, 4),
+  stringsAsFactors = FALSE
 )
-edge_list <- edgelist_from_group(df, 'Group', 'Item', remove_duplicates = TRUE)
-print(edge_list)
-
+# Generate edge list without removing duplicates
+edge_list <- edgelist_from_group(df, "group", "item", remove_duplicates = FALSE)
+}
 }
