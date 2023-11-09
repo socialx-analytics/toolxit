@@ -16,38 +16,40 @@
 #' edge_list <- edgelist_from_text(sample_text, 4, TRUE, sample_stopwords)
 #' print(edge_list)
 #' }
-edgelist_from_text <- function(text = NULL, window_size = 1, remove_duplicates = FALSE, stopwords = character(0)) {
+edgelist_from_texts <- function(texts = NULL, window_size = 2, remove_duplicates = FALSE, stopwords = character(0)) {
   # Validate input parameters
-  if (!is.character(text) || is.null(text) || text == "") {
-    stop("Text must be a non-empty string.")
+  if (is.null(texts) || !is.character(texts) || length(texts) == 0) {
+    stop("Text must be a non-empty character vector.")
   }
 
   if (!is.numeric(window_size) || window_size < 1) {
     stop("Window size must be a positive integer.")
   }
 
-  # Preprocess text and stopwords
-  text <- tolower(text) # Convert text to lowercase
-  stopwords <- tolower(stopwords) # Convert stopwords to lowercase
-
-  # Split text into words, remove stopwords, and define word length
-  words <- unlist(strsplit(text, "\\W+")) # Split text into words using non-word characters as separators
-  words <- words[!words %in% stopwords] # Remove stopwords
-  len <- length(words) # Get the number of words after stopwords removal
-
   # Initialize an empty data frame to store edges
   edge_list <- data.frame(source = character(), target = character(), stringsAsFactors = FALSE)
 
-  # Generate edges based on the context window
-  for (i in 1:len) {
-    window_start <- max(1, i - window_size)
-    window_end <- min(len, i + window_size)
-    window_indices <- window_start:window_end
-    window_indices <- window_indices[window_indices != i]
+  # Iterate over each text string
+  for (text in texts) {
+    # Convert text to lowercase
+    text <- tolower(text)
 
-    # Create edges within the context window
-    for (j in window_indices) {
-      edge_list <- rbind(edge_list, data.frame(source = words[i], target = words[j]))
+    # Split text into words, remove stopwords, and define word length
+    words <- unlist(strsplit(text, "\\W+"))
+    words <- words[!words %in% stopwords] # Remove stopwords
+    len <- length(words) # Get the number of words after stopwords removal
+
+    # Generate edges based on the context window
+    for (i in 1:len) {
+      window_start <- max(1, i - window_size)
+      window_end <- min(len, i + window_size)
+      window_indices <- window_start:window_end
+      window_indices <- window_indices[window_indices != i]
+
+      # Create edges within the context window
+      for (j in window_indices) {
+        edge_list <- rbind(edge_list, data.frame(source = words[i], target = words[j]))
+      }
     }
   }
 
