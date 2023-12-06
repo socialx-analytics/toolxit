@@ -3,7 +3,7 @@
 export(compute_cosine_similarity)
 export(edgelist_from_entities)
 export(edgelist_from_group)
-export(edgelist_from_text)
+export(edgelist_from_texts)
 export(read_pdf)
 export(split_text)
 export(stem_words)
