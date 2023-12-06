@@ -1,9 +1,9 @@
 Package: toolxit
-Title: Just a toolkit to help make work easier
+Title: Just a toolkit to make the analysis process easier
 Version: 1.1
 Authors@R: 
     person("Muhammad Apriandito Arya", "Saputra", "apriandito@socialx.id", role = c("aut", "cre"))
-Description: There are so many repetitive tasks when working, why not just create a package?
+Description: Contains several tools to simplify data processing, from import to visualization.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
